@@ -4,13 +4,13 @@ s = 100; % Size of lattice.
 n = 1000; % Number of agents.
 T = 1000; % Max time.
 d = 0.3; % Diffusion rate.
-v0 = -500.; % Big potential strength.
+v0 = -100.; % Big potential strength.
 u0 = -20.; % Small potential strength.
 std = 20.; % Big potential standard deviation.
 std2 = 5.; % Small potential standard deviation.
-mn = [0 50; 0 -50]; % Big potential mean.
+mn = [0,0]; % Big potential mean.
 l = 0.002; % Decay constant.
-
+en_scale = 1; % Scaling of the energy - turning up is equ
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -78,14 +78,14 @@ while (t < T)
     refreshdata(h)
     drawnow
     
-    if mod(t, tmod) == 0
-        disp(t)        
-        %unweightN = double(N>friend_tol);
-        degrees(:, meas) = sum(unweightN, 2);
-        %clust_coef(1, meas) = ClustCoeff(unweightN);
-        %av_path(1,meas) = Average_PL(unweightN);
-        %[modularity(1, meas), clusters(:, meas)] = modularity(unweightN);
-        meas = meas + 1;
+    if 0
+       unweightN = double(N>friend_tol);
+       degrees(:, meas) = sum(unweightN, 2);
+       clust_coef(1, meas) = ClustCoeff(unweightN);
+       av_path(1,meas) = Average_PL(unweightN);
+       %[modularity(1, meas), clusters(:, meas)] = modularity(unweightN);
+       
+       meas = meas + 1
     end
     
     t = t + 1;
