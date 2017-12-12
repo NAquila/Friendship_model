@@ -5,13 +5,15 @@ s = 100; % Size of lattice.
 n = 1000; % Number of agents.
 T = 2000; % Max time.
 d = 0.3; % Diffusion rate.
-v0 = -100; % Big potential strength.
+v0 = -0; % Big potential strength.
 u0 = -1; % Small potential strength.
 std = 20.; % Big potential standard deviation.
 std2 = 5.; % Small potential standard deviation.
-mn = [-25 0; 0 25]; % Big potential mean.
-l = 0.002; % Decay constant.
-
+mn = [-15 0; 15 0]; % Big potential mean.
+halflife = 100;  % Time steps until the friendship has decreased to half
+l = log(2) / halflife; % Decay constant.
+type_run = 'Resultat\no_apoint_shorthl';  % The (prefix of the) file to save
+friend_tol = 0.001; % What we define as a friend
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -20,9 +22,9 @@ l = 0.002; % Decay constant.
 % Initial coordinates.
 x = randi([-s/2,s/2],n,1);
 y = randi([-s/2,s/2],n,1);
-n1 = n/2; % #agents who prefer the first attraction point
+n1 = n-1; % #agents who prefer the first attraction point
 n2 = n - n1; % #agents who prefer the second attraction point
-preferences = [repelem([1,0], n1, 1); repelem([0, 1], n2, 1)];
+preferences = [repelem([1,1], n1, 1); repelem([0, 1], n2, 1)];
 x1 = x(1:n1);
 x2 = x(n1+1:end);
 y1 = y(1:n1);
@@ -36,6 +38,8 @@ h1 = plot(x1, y1,'b.');
 hold on;
 h2 = plot( x2, y2, 'r.');
 axis([-s/2 s/2 -s/2 s/2])
+axis off
+
 
 set(h1,'XDataSource','x1');
 set(h1,'YDataSource','y1');
@@ -45,7 +49,6 @@ set(h2,'YDataSource','y2');
 % ///////////////////////////// Initialize measurements  ///////7//////////
 num_meas = 40;
 degrees = zeros(n, num_meas);
-friend_tol = 0.1;
 clust_coef = zeros(1, num_meas);
 av_path = zeros(1, num_meas);
 modularity_save = zeros(1, num_meas);
@@ -90,19 +93,20 @@ while (t <= T)
     refreshdata(h1)
     refreshdata(h2)
     drawnow
+%     F(t) = getframe(gcf);
     
     if  mod(t, tmod) == 0
         disp(t)
         disp('Calculating network properties...')       
         unweightN = double(N>friend_tol);
         disp(' -- degrees')
-        degrees(:, meas) = sum(unweightN, 2);
+        degrees(:, meas) = sum(N, 2);
         disp(' -- clustering coefficients')
         clust_coef(1, meas) = ClustCoeff(unweightN);
         %disp(' -- average pathlength')
         %av_path(1,meas) = Average_PL(unweightN);
         disp(' -- modularity')
-        [modularity_save(1, meas), clusters(:, meas)] = modularity(unweightN);
+        [modularity_save(1, meas), clusters(:, meas)] = modularity(N);
         meas = meas + 1;
     end
     x1 = x(1:n1);
@@ -120,11 +124,17 @@ disp('Saving...')
 % Save the data
 % Clear unwanted data
 clear A ans E energy_x_minus energy_x_plus energy_y_minus energy_y_plus...
-    h1 h2 meas n N p_x_minus p_y_minus t T0 U u0 unweightN x x1 x2 y y1 y2
-type_run = 'Resultat\no_apoint';
+    h1 h2 N meas p_x_minus p_y_minus t T0 U u0 unweightN x x1 x2 y y1 y2
+%type_run = 'Resultat\no_apoint_longhl';
 timestamp = string(clock);
 timestamp = timestamp(1:end-1);
 filename = strjoin([type_run, timestamp], '_');
 filename = filename + '.mat';
-save(filename)
+%save(filename)
 disp('Done!')
+
+% video = VideoWriter('model_run.mp4','MPEG-4');
+% video.FrameRate = 45;
+% open(video)
+% writeVideo(video,F)
+% close(video)
