@@ -1,9 +1,9 @@
-clc
+clc, clear all
 % /////////////////////////////// Parameters //////////////////////////////
 
 s = 100; % Size of lattice.
 n = 1000; % Number of agents.
-T = 1000; % Max time.
+T = 2000; % Max time.
 d = 0.3; % Diffusion rate.
 v0 = -100; % Big potential strength.
 u0 = -1; % Small potential strength.
@@ -43,7 +43,7 @@ set(h2,'XDataSource','x2');
 set(h2,'YDataSource','y2');
 
 % ///////////////////////////// Initialize measurements  ///////7//////////
-num_meas = 10;
+num_meas = 40;
 degrees = zeros(n, num_meas);
 friend_tol = 0.1;
 clust_coef = zeros(1, num_meas);
@@ -56,7 +56,7 @@ meas = 1;
 % /////////////////////////////// Main loop ///////////////////////////////
 
 t = 1;
-while (t < T)
+while (t <= T)
     
     E = reshape([x,y],1,n,2) - reshape([x,y],n,1,2); % Euclidian distances.
     U = triu(sparse((sum(abs(E),3) == 0)),1); % Find agents that share location.
@@ -92,14 +92,15 @@ while (t < T)
     drawnow
     
     if  mod(t, tmod) == 0
+        disp(t)
         disp('Calculating network properties...')       
         unweightN = double(N>friend_tol);
         disp(' -- degrees')
         degrees(:, meas) = sum(unweightN, 2);
         disp(' -- clustering coefficients')
         clust_coef(1, meas) = ClustCoeff(unweightN);
-        disp(' -- average pathlength')
-        av_path(1,meas) = Average_PL(unweightN);
+        %disp(' -- average pathlength')
+        %av_path(1,meas) = Average_PL(unweightN);
         disp(' -- modularity')
         [modularity_save(1, meas), clusters(:, meas)] = modularity(unweightN);
         meas = meas + 1;
@@ -114,3 +115,16 @@ end
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 hold off
+
+disp('Saving...')
+% Save the data
+% Clear unwanted data
+clear A ans E energy_x_minus energy_x_plus energy_y_minus energy_y_plus...
+    h1 h2 meas n N p_x_minus p_y_minus t T0 U u0 unweightN x x1 x2 y y1 y2
+type_run = 'Resultat\no_apoint';
+timestamp = string(clock);
+timestamp = timestamp(1:end-1);
+filename = strjoin([type_run, timestamp], '_');
+filename = filename + '.mat';
+save(filename)
+disp('Done!')
