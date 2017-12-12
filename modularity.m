@@ -18,11 +18,11 @@ Ng = N;
 
 while Unexamined(1)
     
-    [eig_vec, eig_val] = eig(Bg);
-    eig_val_vec = eig_val(logical(eye(Ng)));
-    [~,maxeig_idx] = max(eig_val_vec);
+    [eig_vec, eig_val] = eigs(Bg,1);
+%     eig_val_vec = eig_val(logical(eye(Ng)));
+%     [~,maxeig_idx] = max(eig_val_vec);
     
-    s = sign(eig_vec(:,maxeig_idx));
+    s = sign(eig_vec);%(:,maxeig_idx));
     
     dQ = s'*Bg*s; %/(2*two_m);
     
