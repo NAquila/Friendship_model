@@ -101,7 +101,7 @@ while (t < T)
         disp(' -- average pathlength')
         av_path(1,meas) = Average_PL(unweightN);
         disp(' -- modularity')
-        %[modularity_save(1, meas), clusters(:, meas)] = modularity(unweightN);
+        [modularity_save(1, meas), clusters(:, meas)] = modularity(unweightN);
         meas = meas + 1;
     end
     x1 = x(1:n1);
