@@ -81,7 +81,7 @@ while Unexamined(1)
 end
 
 s = Comunity_indx(:,ones(1,N));
-Q = ~(s-s.').*B/(two_m);
+Q = ~(s-s.').*B/(2*two_m);
 Q = sum(Q(:));
             
 end
