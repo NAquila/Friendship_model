@@ -6,14 +6,15 @@ n = 1000; % Number of agents.
 T = 2000; % Max time.
 d = 0.3; % Diffusion rate.
 v0 = -0; % Big potential strength.
-u0 = -1; % Small potential strength.
+u0 = -10; % Small potential strength.
 std = 20.; % Big potential standard deviation.
-std2 = 5.; % Small potential standard deviation.
-mn = [-15 0; 15 0]; % Big potential mean.
-halflife = 100;  % Time steps until the friendship has decreased to half
+std2 = 20.; % Small potential standard deviation.
+mn = [-25 0; 25 0]; % Big potential mean.
+halflife = 200;  % Time steps until the friendship has decreased to half
 l = log(2) / halflife; % Decay constant.
 type_run = 'Resultat\no_apoint_shorthl';  % The (prefix of the) file to save
-friend_tol = 0.001; % What we define as a friend
+friend_tol = 0.1; % What we define as a friend
+cap = 15; % How strong a friendship can be
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -68,7 +69,7 @@ while (t <= T)
     T0(A == 1) = t; % Update time reference.
     
     N = N.*dec(t,l,T0) + A; % Update network.
-    N(N>10) = 10; %Cap how good friends people can be
+    N(N>cap) = cap; %Cap how good friends people can be
     
     % Calculate energies.
     energy_x_minus = pot(x - 1,y,s,v0,u0,std,std2,mn,N,[x,y], preferences);
@@ -130,7 +131,7 @@ timestamp = string(clock);
 timestamp = timestamp(1:end-1);
 filename = strjoin([type_run, timestamp], '_');
 filename = filename + '.mat';
-%save(filename)
+save(filename)
 disp('Done!')
 
 % video = VideoWriter('model_run.mp4','MPEG-4');
